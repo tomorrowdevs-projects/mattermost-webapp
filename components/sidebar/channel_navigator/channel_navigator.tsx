@@ -118,7 +118,6 @@ export default class ChannelNavigator extends React.PureComponent<Props> {
                         <div className='SidebarContainer_rightContainer'>
                             {!this.props.showUnreadsCategory && <ChannelFilter/>}
                             {!this.props.showUnreadsCategory && <div className='SidebarChannelNavigator_divider'/>}
-                            {historyArrows}
                         </div>
                         {addChannelDropdown}
                     </div>

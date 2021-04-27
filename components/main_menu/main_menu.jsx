@@ -244,7 +244,7 @@ class MainMenu extends React.PureComponent {
                     </TeamPermissionGate>
                     <TeamPermissionGate
                         teamId={this.props.teamId}
-                        permissions={[Permissions.ADD_USER_TO_TEAM, Permissions.INVITE_GUEST]}
+                        permissions={[Permissions.MANAGE_TEAM]}
                     >
                         {this.shouldShowUpgradeModal() ? upgradeCloudModal : invitePeopleModal}
                     </TeamPermissionGate>
