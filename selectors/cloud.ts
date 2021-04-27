@@ -1,4 +1,3 @@
-
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
@@ -15,6 +14,7 @@ export enum InquiryType {
 
 export enum InquiryIssue{
     CancelAccount = 'cancel_account',
+    TrialQuestions = 'trial_questions'
 }
 
 export function getCloudContactUsLink(state: GlobalState, inquiry: InquiryType, inquiryIssue?: InquiryIssue): string {

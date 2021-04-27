@@ -13,6 +13,8 @@
 import * as TIMEOUTS from '../../fixtures/timeouts';
 
 describe('Quick switcher', () => {
+    const userPrefix = 'az';
+    const gmBadge = 'G';
     let testTeam;
     let testUser;
     let firstUser;
@@ -21,33 +23,35 @@ describe('Quick switcher', () => {
     let testChannel;
 
     before(() => {
-        // # create three users for testing
+        // # Create three users for testing
         cy.apiInitSetup().then(({user, team, channel}) => {
             testUser = user;
             testTeam = team;
             testChannel = channel;
-            cy.visitAndWait(`/${testTeam.name}/channels/town-square`);
+            cy.visit(`/${testTeam.name}/channels/town-square`);
         });
-        cy.apiCreateUser({prefix: 'az1'}).then(({user: user1}) => {
+        cy.apiCreateUser({prefix: `${userPrefix}1`}).then(({user: user1}) => {
             firstUser = user1;
         });
 
-        cy.apiCreateUser({prefix: 'az2'}).then(({user: user1}) => {
+        cy.apiCreateUser({prefix: `${userPrefix}2`}).then(({user: user1}) => {
             secondUser = user1;
         });
 
-        cy.apiCreateUser({prefix: 'az3'}).then(({user: user1}) => {
+        cy.apiCreateUser({prefix: `${userPrefix}3`}).then(({user: user1}) => {
             thirdUser = user1;
         });
+
+        cy.apiLogout();
+    });
+
+    beforeEach(() => {
+        // # Login as test user
+        cy.apiLogin(testUser);
     });
 
     it('MM-T3447_1 Should add recent user on top of results', () => {
-        cy.apiLogout();
-
-        // # Login as test user
-        cy.apiLogin(testUser);
-
-        cy.visitAndWait(`/${testTeam.name}/channels/town-square`);
+        cy.visit(`/${testTeam.name}/channels/town-square`);
 
         // # Type either cmd+K / ctrl+K depending on OS
         cy.get('#post_textbox').cmdOrCtrlShortcut('K');
@@ -106,7 +110,7 @@ describe('Quick switcher', () => {
         // # Search with the term z2
         cy.focused().type('z2');
 
-        // Should match second user as it has a partial match with the search term
+        // * Should match second user as it has a partial match with the search term
         cy.get('.suggestion--selected').should('exist').and('contain.text', secondUser.username);
 
         cy.get('body').type('{esc}', {force: true});
@@ -115,7 +119,7 @@ describe('Quick switcher', () => {
         // # Search with the term z3
         cy.focused().type('z3');
 
-        // Should match third user as it has a partial match with the search term
+        // * Should match third user as it has a partial match with the search term
         cy.get('.suggestion--selected').should('exist').and('contain.text', thirdUser.username);
         cy.get('body').type('{esc}', {force: true});
     });
@@ -123,13 +127,14 @@ describe('Quick switcher', () => {
     it('MM-T3447_4 Should not match GM if it is removed from LHS', () => {
         cy.apiCreateGroupChannel([testUser.id, firstUser.id, secondUser.id]).then(({channel}) => {
             // # Visit the newly created group message
-            cy.visitAndWait(`/${testTeam.name}/channels/${channel.name}`);
+            cy.visit(`/${testTeam.name}/channels/${channel.name}`);
+            cy.postMessage('Hello to GM');
 
             cy.get('#post_textbox').cmdOrCtrlShortcut('K');
-            cy.focused().type('a');
+            cy.focused().type(userPrefix);
 
             // * Should have recently interacted GM on top, Matching as Gaz because we have G prefixed for GM's
-            cy.get('.suggestion--selected').should('exist').and('contain.text', 'Gaz');
+            cy.get('.suggestion--selected').should('exist').and('contain.text', gmBadge + userPrefix);
             cy.get('body').type('{esc}', {force: true});
 
             // # Open the channel dropdown menu
@@ -138,8 +143,12 @@ describe('Quick switcher', () => {
             // # Click on 'Close group message' menu item
             cy.get('#channelCloseMessage').click().wait(TIMEOUTS.HALF_SEC);
 
+            // # Go to the DM channel of third user
+            cy.goToDm(thirdUser.username);
+            cy.postMessage('Hello to DM');
+
             cy.get('#post_textbox').cmdOrCtrlShortcut('K');
-            cy.focused().type('a');
+            cy.focused().type(userPrefix);
 
             // * Should have recently interacted DM on top
             cy.get('.suggestion--selected').should('exist').and('contain.text', thirdUser.username);
@@ -149,13 +158,13 @@ describe('Quick switcher', () => {
     it('MM-T3447_5 Should match GM even with space in search term', () => {
         cy.apiCreateGroupChannel([testUser.id, firstUser.id, thirdUser.id]).then(({channel}) => {
             // # Visit the newly created group message
-            cy.visitAndWait(`/${testTeam.name}/channels/${channel.name}`);
+            cy.visit(`/${testTeam.name}/channels/${channel.name}`);
 
             cy.get('#post_textbox').cmdOrCtrlShortcut('K');
             cy.focused().type(`${testUser.username} az3`);
 
             // * Should have the GM listed in the results
-            cy.get('.suggestion--selected').should('exist').and('contain.text', 'Gaz');
+            cy.get('.suggestion--selected').should('exist').and('contain.text', gmBadge + userPrefix);
         });
     });
 });

@@ -7,6 +7,8 @@
 
 /* eslint-disable no-loop-func */
 
+import dayjs from 'dayjs';
+
 import '@testing-library/cypress/add-commands';
 import 'cypress-file-upload';
 import 'cypress-wait-until';
@@ -30,9 +32,10 @@ import './storybook_commands';
 import './task_commands';
 import './ui';
 import './ui_commands'; // soon to deprecate
-import './visual_commands';
 
 import {getDefaultConfig} from './api/system';
+
+Cypress.dayjs = dayjs;
 
 Cypress.on('test:after:run', (test, runnable) => {
     // Only if the test is failed do we want to add
@@ -108,9 +111,6 @@ before(() => {
         } else {
             // # Create and login a newly created user as sysadmin
             cy.apiCreateAdmin().then(({sysadmin}) => {
-                // Sends dummy call to update the config after creating an admin user.
-                // Without this, first call to `cy.apiUpdateConfig()` consistently getting time out error in CI against remote server.
-                cy.externalRequest({user: sysadmin, method: 'put', path: 'config', data: getDefaultConfig(), failOnStatusCode: false});
                 cy.apiAdminLogin().then(() => sysadminSetup(sysadmin));
             });
         }
@@ -154,6 +154,12 @@ function printServerDetails() {
 }
 
 function sysadminSetup(user) {
+    if (Cypress.env('firstTest')) {
+        // Sends dummy call to update the config to server
+        // Without this, first call to `cy.apiUpdateConfig()` consistently getting time out error in CI against remote server.
+        cy.externalRequest({user, method: 'put', path: 'config', data: getDefaultConfig(), failOnStatusCode: false});
+    }
+
     if (!user.email_verified) {
         cy.apiVerifyUserEmailById(user.id);
     }
@@ -186,6 +192,9 @@ function sysadminSetup(user) {
             cy.apiPatchUserRoles(user.id, ['system_admin', 'system_manager', 'system_user']);
         }
     });
+
+    // # Disable plugins not included in prepackaged
+    cy.apiDisableNonPrepackagedPlugins();
 
     // # Check if default team is present; create if not found.
     cy.apiGetTeamsForUser().then(({teams}) => {

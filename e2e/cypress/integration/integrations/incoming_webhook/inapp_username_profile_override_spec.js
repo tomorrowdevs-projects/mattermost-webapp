@@ -55,7 +55,7 @@ describe('Incoming webhook', () => {
     });
 
     beforeEach(() => {
-        cy.visitAndWait(`/${testTeam.name}/channels/town-square`);
+        cy.visit(`/${testTeam.name}/channels/town-square`);
     });
 
     it('MM-T620 Payload username and profile picture override in-app settings', () => {
@@ -64,7 +64,7 @@ describe('Incoming webhook', () => {
         cy.postIncomingWebhook({url: incomingWebhook.url, data: payload});
 
         // # Click test channel on sidebar
-        cy.get(`#sidebarItem_${testChannel.name}`).should('be.visible').click();
+        cy.get(`#sidebarItem_${testChannel.name}`).should('be.visible').click({force: true});
 
         // # Wait for the webhook message to get posted
         cy.waitUntil(() => cy.getLastPost().then((el) => {
@@ -82,7 +82,7 @@ describe('Incoming webhook', () => {
         cy.postIncomingWebhook({url: incomingWebhook.url, data: payload});
 
         // # Click test channel on sidebar
-        cy.get(`#sidebarItem_${testChannel.name}`).should('be.visible').click();
+        cy.get(`#sidebarItem_${testChannel.name}`).should('be.visible').click({force: true});
 
         // # Wait for the webhook message to get posted
         cy.waitUntil(() => cy.getLastPost().then((el) => {
@@ -97,7 +97,7 @@ describe('Incoming webhook', () => {
 
 function editIncomingWebhook(incomingWebhookId, teamName, inAppUsername, inAppIconURL) {
     // # Edit incoming webhook
-    cy.visitAndWait(`/${teamName}/integrations/incoming_webhooks/edit?id=${incomingWebhookId}`);
+    cy.visit(`/${teamName}/integrations/incoming_webhooks/edit?id=${incomingWebhookId}`);
     cy.get('.backstage-header', {timeout: TIMEOUTS.ONE_MIN}).should('be.visible').within(() => {
         cy.findByText('Incoming Webhooks').should('be.visible');
         cy.findByText('Edit').should('be.visible');

@@ -16,7 +16,7 @@ const uniqueUserId = getRandomId();
 
 function signupWithEmail(name, pw) {
     // # Go to /login
-    cy.visitAndWait('/login');
+    cy.visit('/login');
 
     // # Click on sign up button
     cy.get('#signup').click();
@@ -34,7 +34,7 @@ function signupWithEmail(name, pw) {
     cy.get('#createAccountButton').click();
 }
 
-describe('Email Address', () => {
+describe('Cloud Onboarding', () => {
     before(() => {
         // # Set EnableOpenServer to true and disable other auth options
         const newSettings = {
@@ -46,7 +46,7 @@ describe('Email Address', () => {
         cy.apiLogout();
     });
 
-    it('On14634 Email address already exists', () => {
+    it('MM-T403 Email address already exists', () => {
         // # Signup a new user with an email address and user generated in signupWithEmail
         signupWithEmail('unique.' + uniqueUserId, 'unique1pw');
 

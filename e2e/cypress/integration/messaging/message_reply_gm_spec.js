@@ -11,6 +11,7 @@
 // Group: @messaging
 
 import {getRandomId} from '../../utils';
+import * as TIMEOUTS from '../../fixtures/timeouts';
 
 describe('Reply in existing GM', () => {
     let testUser;
@@ -37,7 +38,7 @@ describe('Reply in existing GM', () => {
 
             // # Login as test user and go to town square
             cy.apiLogin(testUser);
-            cy.visitAndWait(`/${team.name}/channels/town-square`);
+            cy.visit(`/${team.name}/channels/town-square`);
         });
     });
 
@@ -47,7 +48,7 @@ describe('Reply in existing GM', () => {
         // # Create a group channel for 3 users
         cy.apiCreateGroupChannel(userGroupIds).then(({channel: gmChannel}) => {
             // # Go to the group message channel
-            cy.visitAndWait(`/${testTeam.name}/channels/${gmChannel.name}`);
+            cy.visit(`/${testTeam.name}/channels/${gmChannel.name}`);
             const rootPostMessage = `this is test message from user: ${otherUser1.id}`;
 
             // # Post message as otherUser1
@@ -69,6 +70,7 @@ describe('Reply in existing GM', () => {
                 cy.postMessageReplyInRHS(replyMessage);
                 cy.getLastPostId().then((replyId) => {
                     // * Verify that the reply is in the RHS with matching text
+                    cy.wait(TIMEOUTS.TWO_SEC);
                     cy.get(`#rhsPostMessageText_${replyId}`).should('be.visible').and('have.text', replyMessage);
 
                     // * Verify that the reply is in the center channel with matching text
@@ -78,7 +80,7 @@ describe('Reply in existing GM', () => {
                     cy.apiLogin(otherUser1);
 
                     // # Go to the group message channel
-                    cy.visitAndWait(`/${testTeam.name}/channels/${gmChannel.name}`);
+                    cy.visit(`/${testTeam.name}/channels/${gmChannel.name}`);
 
                     // * Verify that the reply is in the center channel with matching text
                     cy.get(`#postMessageText_${replyId}`).should('be.visible').should('have.text', replyMessage);

@@ -12,18 +12,18 @@
 
 import * as TIMEOUTS from '../../fixtures/timeouts';
 
-describe('MM-13697 Edit Post with attachment', () => {
+describe('Messaging', () => {
     let townsquareLink;
 
     before(() => {
         // # Login as test user and visit town-square
         cy.apiInitSetup({loginAfter: true}).then(({team}) => {
             townsquareLink = `/${team.name}/channels/town-square`;
-            cy.visitAndWait(townsquareLink);
+            cy.visit(townsquareLink);
         });
     });
 
-    it('Pasted text should be pasted where the cursor is', () => {
+    it('MM-T99 Edit Post with attachment, paste text in middle', () => {
         // # Got to a test channel on the side bar
         cy.get('#sidebarItem_town-square').click({force: true});
 

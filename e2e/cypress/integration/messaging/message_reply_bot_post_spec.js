@@ -28,13 +28,13 @@ describe('Messaging', () => {
         // # Create and visit new channel
         cy.apiInitSetup().then(({team, channel}) => {
             newChannel = channel;
-            cy.visitAndWait(`/${team.name}/channels/${channel.name}`);
+            cy.visit(`/${team.name}/channels/${channel.name}`);
         });
     });
 
     it('MM-T93 Replying to an older bot post that has no post content and no attachment pretext', () => {
         // # Get yesterdays date in UTC
-        const yesterdaysDate = Cypress.moment().subtract(1, 'days').valueOf();
+        const yesterdaysDate = Cypress.dayjs().subtract(1, 'days').valueOf();
 
         // # Create a bot and get userID
         cy.apiCreateBot().then(({bot}) => {
@@ -69,7 +69,7 @@ describe('Messaging', () => {
                 cy.getLastPostId().then((replyId) => {
                     // * Verify that the reply is in the RHS with matching text
                     cy.get(`#rhsPost_${replyId}`).within(() => {
-                        cy.findByTestId('post-link').should('not.be.visible');
+                        cy.findByTestId('post-link').should('not.exist');
                         cy.get(`#rhsPostMessageText_${replyId}`).should('be.visible').and('have.text', 'A reply to an older post bot post');
                     });
 
@@ -93,13 +93,13 @@ describe('Messaging', () => {
             });
 
             // # Verify RHS is closed
-            cy.get('#rhsContainer').should('not.be.visible');
+            cy.get('#rhsContainer').should('not.exist');
         });
     });
 
     it('MM-T91 Replying to an older post by a user that has no content (only file attachments)', () => {
         // # Get yesterdays date in UTC
-        const yesterdaysDate = Cypress.moment().subtract(1, 'days').valueOf();
+        const yesterdaysDate = Cypress.dayjs().subtract(1, 'days').valueOf();
 
         // # Create a bot and get userID
         cy.apiCreateBot().then(({bot}) => {
@@ -135,7 +135,7 @@ describe('Messaging', () => {
                 cy.getLastPostId().then((replyId) => {
                     // * Verify that the reply is in the RHS with matching text
                     cy.get(`#rhsPost_${replyId}`).within(() => {
-                        cy.findByTestId('post-link').should('not.be.visible');
+                        cy.findByTestId('post-link').should('not.exist');
                         cy.get(`#rhsPostMessageText_${replyId}`).should('be.visible').and('have.text', 'A reply to an older post with message attachment');
                     });
 
@@ -159,7 +159,7 @@ describe('Messaging', () => {
             });
 
             // # Verify RHS is closed
-            cy.get('#rhsContainer').should('not.be.visible');
+            cy.get('#rhsContainer').should('not.exist');
         });
     });
 });

@@ -34,13 +34,13 @@ describe('Account Settings > Sidebar > General > Edit', () => {
                 });
             });
 
-            cy.visitAndWait(`/${team.name}/channels/town-square`);
+            cy.visit(`/${team.name}/channels/town-square`);
         });
     });
 
     beforeEach(() => {
         // # Go to Account Settings
-        cy.toAccountSettingsModal();
+        cy.uiOpenAccountSettingsModal();
     });
 
     it('MM-T2050 Username cannot be blank', () => {
@@ -85,11 +85,11 @@ describe('Account Settings > Sidebar > General > Edit', () => {
         cy.get('#usernameEdit').click();
 
         // # Add the username to textfield contents
-        cy.get('#username').clear().type(`${otherUser.username}`);
+        cy.get('#username').clear().type(otherUser.username);
         cy.get('#saveSetting').click();
 
         // * Check if element is present and contains expected text values
-        cy.get('#serverError').should('be.visible').should('contain', 'Unable to find the existing account to update.');
+        cy.get('#serverError').should('be.visible').should('contain', 'An account with that username already exists.');
 
         // # Click "x" button to close Account Settings modal
         cy.get('#accountSettingsHeader > .close').click();
@@ -108,8 +108,8 @@ describe('Account Settings > Sidebar > General > Edit', () => {
 
             // # Login the temporary user
             cy.apiLogin(tempUser);
-            cy.visitAndWait(`/${testTeam.name}/channels/town-square`);
-            cy.toAccountSettingsModal();
+            cy.visit(`/${testTeam.name}/channels/town-square`);
+            cy.uiOpenAccountSettingsModal();
 
             // # Step 1
             // # Click the General tab
@@ -132,7 +132,7 @@ describe('Account Settings > Sidebar > General > Edit', () => {
 
             // # Step 3
             // * Verify that we've logged in as the temp user
-            cy.visitAndWait(`/${testTeam.name}/channels/town-square`);
+            cy.visit(`/${testTeam.name}/channels/town-square`);
             cy.get('#headerUsername').should('contain', '@' + newTempUserName);
 
             // # Step 4
@@ -210,14 +210,14 @@ describe('Account Settings > Sidebar > General > Edit', () => {
     it('MM-T2056 Username changes when viewed by other user', () => {
         cy.apiLogout().wait(TIMEOUTS.ONE_SEC).then(() => {
             cy.apiLogin(testUser).then(() => {
-                cy.visitAndWait(`/${testTeam.name}/channels/town-square`);
+                cy.visit(`/${testTeam.name}/channels/town-square`);
 
                 // # Post a message in town-square
                 cy.postMessage('Testing username update');
                 cy.apiLogout().wait(TIMEOUTS.ONE_SEC).then(() => {
                     // # Login as other user
                     cy.apiLogin(otherUser).then(() => {
-                        cy.visitAndWait(`/${testTeam.name}/channels/town-square`);
+                        cy.visit(`/${testTeam.name}/channels/town-square`);
 
                         // # get last post in town-square for verifying username
                         cy.getLastPostId().then((postId) => {
@@ -235,10 +235,10 @@ describe('Account Settings > Sidebar > General > Edit', () => {
                         cy.apiLogout().wait(TIMEOUTS.ONE_SEC).then(() => {
                             // # Login as test user
                             cy.apiLogin(testUser).then(() => {
-                                cy.visitAndWait(`/${testTeam.name}/channels/town-square`);
+                                cy.visit(`/${testTeam.name}/channels/town-square`);
 
                                 // # Open account settings modal
-                                cy.toAccountSettingsModal();
+                                cy.uiOpenAccountSettingsModal();
 
                                 // # Open Full Name section
                                 cy.get('#usernameDesc').click();
@@ -253,7 +253,7 @@ describe('Account Settings > Sidebar > General > Edit', () => {
 
                                 cy.apiLogout().wait(TIMEOUTS.ONE_SEC).then(() => {
                                     cy.apiLogin(otherUser).then(() => {
-                                        cy.visitAndWait(`/${testTeam.name}/channels/town-square`);
+                                        cy.visit(`/${testTeam.name}/channels/town-square`);
 
                                         // # get last post in town-square for verifying username
                                         cy.getLastPostId().then((postId) => {

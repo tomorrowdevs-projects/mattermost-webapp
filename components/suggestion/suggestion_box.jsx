@@ -6,7 +6,7 @@ import React from 'react';
 
 import EventEmitter from 'mattermost-redux/utils/event_emitter';
 
-import QuickInput from 'components/quick_input.jsx';
+import QuickInput from 'components/quick_input';
 import Constants from 'utils/constants';
 import * as UserAgent from 'utils/user_agent';
 import * as Utils from 'utils/utils.jsx';
@@ -90,6 +90,7 @@ export default class SuggestionBox extends React.PureComponent {
         onComposition: PropTypes.func,
 
         onSelect: PropTypes.func,
+        onSearchTypeSelected: PropTypes.func,
 
         /**
          * Function called when an item is selected
@@ -343,7 +344,7 @@ export default class SuggestionBox extends React.PureComponent {
 
     handleChange = (e) => {
         const textbox = this.getTextbox();
-        const pretext = textbox.value.substring(0, textbox.selectionEnd).toLowerCase();
+        const pretext = textbox.value.substring(0, textbox.selectionEnd);
 
         if (!this.composing && this.pretext !== pretext) {
             this.handlePretextChanged(pretext);
@@ -656,7 +657,7 @@ export default class SuggestionBox extends React.PureComponent {
             if (handled) {
                 if (this.state.suggestionBoxAlgn.pixelsToMoveX === undefined &&
                     this.state.suggestionBoxAlgn.pixelsToMoveY === undefined &&
-                    provider.triggerCharacter && ['@', ':', '~'].indexOf(provider.triggerCharacter) !== -1) {
+                    ['@', ':', '~', '/'].includes(provider.triggerCharacter)) {
                     const char = provider.triggerCharacter;
                     const pxToSubstract = Utils.getPxToSubstract(char);
 

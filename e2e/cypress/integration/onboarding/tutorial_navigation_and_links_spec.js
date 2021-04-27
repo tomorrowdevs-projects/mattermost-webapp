@@ -8,15 +8,17 @@
 // ***************************************************************
 
 // Stage: @prod
-// Group: @onboarding @smoke
+// Group: @onboarding @smoke @not_cloud
 
-describe('Test Tutorial Navigation', () => {
+describe('Cloud Onboarding', () => {
     let testUser;
     let otherUser;
     let testTeam;
     let config;
 
     before(() => {
+        cy.shouldNotRunOnCloudEdition();
+
         cy.apiGetConfig().then((data) => {
             ({config} = data);
         });
@@ -35,12 +37,12 @@ describe('Test Tutorial Navigation', () => {
                 cy.apiAddUserToTeam(testTeam.id, testUser.id);
 
                 cy.apiLogin(testUser);
-                cy.visitAndWait(`/${testTeam.name}/channels/town-square`);
+                cy.visit(`/${testTeam.name}/channels/town-square`);
             });
         });
     });
 
-    it('On13989 - Tutorial Navigation and Links', () => {
+    it('MM-T401 - Tutorial Navigation and Links', () => {
         // * Check that step one displays after new user signs in.
         checkStepOne();
 
@@ -99,7 +101,7 @@ describe('Test Tutorial Navigation', () => {
 
         // # Log in as another new user with the tutorial bypass flag set to false.
         cy.apiLogin(otherUser);
-        cy.visitAndWait(`/${testTeam.name}/channels/town-square`);
+        cy.visit(`/${testTeam.name}/channels/town-square`);
 
         // * Verify that the first step of the tutorial displays.
         checkStepOne();

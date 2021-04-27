@@ -16,7 +16,7 @@ describe('Search', () => {
     before(() => {
         // # Login as test user and visit town-square
         cy.apiInitSetup({loginAfter: true}).then(({team}) => {
-            cy.visitAndWait(`/${team.name}/channels/town-square`);
+            cy.visit(`/${team.name}/channels/town-square`);
 
             // # Post several messages of similar format to add complexity in searching
             Cypress._.times(5, () => {
@@ -25,7 +25,7 @@ describe('Search', () => {
         });
     });
 
-    it('S14548 Search results Right-Hand-Side: Post a comment', () => {
+    it('MM-T373 Search results Right-Hand-Side: Post a comment', () => {
         const message = `asparagus${getRandomId()}`;
         const comment = 'Replying to asparagus';
 

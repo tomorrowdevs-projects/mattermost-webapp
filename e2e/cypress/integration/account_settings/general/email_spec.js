@@ -31,7 +31,7 @@ describe('Account Settings -> General -> Email', () => {
         }).then(({user: user1}) => {
             otherUser = user1;
             cy.apiLogin(testUser);
-            cy.visitAndWait(`/${testTeam.name}/channels/town-square`);
+            cy.visit(`/${testTeam.name}/channels/town-square`);
         });
     });
 
@@ -85,7 +85,7 @@ describe('Account Settings -> General -> Email', () => {
         cy.get('#saveSetting').click().wait(TIMEOUTS.HALF_SEC);
 
         // * Check that the correct error message is shown.
-        cy.get('#serverError').should('be.visible').should('have.text', 'This email is already taken. Please choose another.');
+        cy.get('#serverError').should('be.visible').should('have.text', 'An account with that email already exists.');
     });
 
     it('MM-T2068 email address and confirmation don\'t match', () => {
@@ -118,8 +118,9 @@ describe('Account Settings -> General -> Email', () => {
         cy.get('#confirmEmail').should('be.visible').type(`user-${randomId}@example.com`);
         cy.get('#currentPassword').should('be.visible').type(testUser.password);
 
-        // # Save the settings
+        // # Save the settings and close
         cy.get('#saveSetting').click().wait(TIMEOUTS.HALF_SEC);
+        cy.uiClose();
 
         // * Verify the announcement bar
         cy.get('.announcement-bar').should('be.visible').should('contain.text', 'Check your email inbox to verify the address.');
@@ -146,7 +147,7 @@ describe('Account Settings -> General -> Email', () => {
             const permalink = matched[0];
 
             // # Click on the link
-            cy.visitAndWait(permalink);
+            cy.visit(permalink);
 
             // * Verify announcement bar
             cy.get('.announcement-bar').should('be.visible').should('contain.text', 'Email verified');
@@ -202,7 +203,7 @@ describe('Account Settings -> General -> Email', () => {
             assert(matched.length > 0);
 
             const permalink = matched[0];
-            cy.visitAndWait(permalink);
+            cy.visit(permalink);
 
             // * Verify login text
             cy.get('#login_section .alert-success').should('contain.text', 'Email Verified');
